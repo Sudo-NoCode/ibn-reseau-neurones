@@ -1,0 +1,66 @@
+================================================================================================
+RAPPORT IBN — réseau à 3 couches
+================================================================================================
+Intentions : « visio correcte ; voix correcte »
+Durée      : 420 s
+
+VISIO — contrat : latence ≤ 60 ms, pertes ≤ 2 %, gigue ≤ 15 ms, débit ≥ 90 %
+  Contrat tenu : 99.0 % du temps   (prévu par le jumeau : 97.6 %)
+  Leviers : hors du chemin normal 56 % du temps, priorité 0 %, h2 bridé 0 %, 14 changements ; secondes sur un levier interdit : 0
+  Incidents : 3, dont 0 annoncés par le détecteur ; alertes du détecteur : 0
+    #1    43–  44 s   2 s hors contrat   (vraie cause, connue du labo seulement : congestion (UDP))
+        détecteur : non annoncé ; diagnostic : instable
+        actions : visio passe par d1-c1 (chemin normal) (à 43 s); voix passe par d2-c2 (à 43 s); visio passe par d2-c2 (à 44 s)
+    #2   244– 244 s   1 s hors contrat   (vraie cause, connue du labo seulement : congestion (UDP))
+        détecteur : non annoncé ; diagnostic : congestion
+        actions : visio passe par d2-c2 (à 244 s)
+    #3   276– 276 s   1 s hors contrat   (vraie cause, connue du labo seulement : congestion (UDP))
+        détecteur : non annoncé ; diagnostic : congestion
+        actions : visio passe par d2-c2 (à 276 s)
+
+VOIX — contrat : latence ≤ 60 ms, pertes ≤ 2 %, gigue ≤ 15 ms, débit ≥ 90 %
+  Contrat tenu : 99.8 % du temps   (prévu par le jumeau : 99.8 %)
+  Leviers : hors du chemin normal 43 % du temps, priorité 0 %, h4 bridé 0 %, 13 changements ; secondes sur un levier interdit : 0
+  Incidents : 1, dont 0 annoncés par le détecteur ; alertes du détecteur : 0
+    #1    55–  55 s   1 s hors contrat   (vraie cause, connue du labo seulement : congestion (UDP))
+        détecteur : non annoncé ; diagnostic : instable
+        actions : voix passe par d2-c2 (à 55 s); voix passe par d2-c1 (à 56 s)
+
+Qualité de mesure : 0.2 % de secondes perturbées par un gel de la VM
+
+JOURNAL
+[  31 s] VISIO → passe par d2-c2  (aucun incident en cours)
+[  31 s] VOIX  → passe par d2-c2  (aucun incident en cours)
+[  42 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[  43 s] VISIO ✗ contrat perdu : débit 3.19 Mb/s
+[  43 s] VISIO → passe par d1-c1 (chemin normal)
+[  43 s] VOIX  → passe par d2-c2
+[  44 s] VISIO → passe par d2-c2
+[  45 s] VISIO ✓ contrat rétabli, 2 s après la perte
+[  54 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[  55 s] VOIX  ✗ contrat perdu : gigue 20 ms
+[  55 s] VOIX  → passe par d2-c2
+[  56 s] VOIX  → passe par d2-c1
+[  56 s] VOIX  ✓ contrat rétabli, 1 s après la perte
+[  84 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[  85 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 124 s] VISIO → passe par d2-c2  (aucun incident en cours)
+[ 125 s] VOIX  → passe par d2-c2  (aucun incident en cours)
+[ 193 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 194 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 231 s] VISIO → passe par d2-c2  (aucun incident en cours)
+[ 231 s] VOIX  → passe par d2-c2  (aucun incident en cours)
+[ 242 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 243 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 243 s] VOIX  → passe par d2-c2  (aucun incident en cours)
+[ 244 s] VISIO ✗ contrat perdu : latence 130 ms
+[ 244 s] VISIO → passe par d2-c2
+[ 245 s] VISIO ✓ contrat rétabli, 1 s après la perte
+[ 275 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 276 s] VISIO ✗ contrat perdu : latence 119 ms
+[ 276 s] VISIO → passe par d2-c2
+[ 277 s] VISIO ✓ contrat rétabli, 1 s après la perte
+[ 292 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 293 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 335 s] VISIO → passe par d2-c2  (aucun incident en cours)
+[ 391 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)

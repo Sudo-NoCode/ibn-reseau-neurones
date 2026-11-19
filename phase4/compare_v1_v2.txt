@@ -1,0 +1,18 @@
+
+=== pannes brusques (comme avant) : 10 épisodes de 10 min, contrat par défaut ===
+politique           récompense   visio hors contrat   voix hors contrat   changements
+règle manuelle             546               3.45 %              2.58 %            15
+agent v1                   580               0.52 %              0.37 %            12
+agent v2                   578               0.62 %              0.47 %            13
+
+=== une panne sur deux progressive : 10 épisodes de 10 min, contrat par défaut ===
+politique           récompense   visio hors contrat   voix hors contrat   changements
+règle manuelle             548               3.72 %              2.42 %            14
+agent v1                   582               0.38 %              0.25 %            12
+agent v2                   581               0.53 %              0.30 %            14
+
+=== toutes les pannes progressives : 10 épisodes de 10 min, contrat par défaut ===
+politique           récompense   visio hors contrat   voix hors contrat   changements
+règle manuelle             554               3.25 %              2.30 %            13
+agent v1                   583               0.33 %              0.13 %            16
+agent v2                   583               0.30 %              0.17 %            14

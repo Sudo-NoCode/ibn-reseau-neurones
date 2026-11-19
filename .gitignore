@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.log
+conf/sortie/*
+!conf/sortie/entreprise/
+phase4/v2/
+phase4/det3_jumeau_test.csv

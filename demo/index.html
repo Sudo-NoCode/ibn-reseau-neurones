@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IBN — réseau à 3 couches</title>
+<style>
+  :root {
+    --fond: #070b14; --carte: #0d1424; --bord: #1c2740; --texte: #d7e1f5; --pale: #7d8bab;
+    --visio: #22d3ee; --voix: #a78bfa; --ok: #34d399; --ko: #f87171; --orange: #fb923c; --ambre: #fbbf24;
+    --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--texte); font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
+  header { padding: 18px 24px 10px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: baseline; }
+  h1 { margin: 0; font: 600 20px "Bahnschrift", "Segoe UI", sans-serif; letter-spacing: .3px; }
+  h1 span { color: var(--visio); }
+  .sous { color: var(--pale); }
+  nav { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 24px 12px; }
+  nav button { background: var(--carte); color: var(--pale); border: 1px solid var(--bord); border-radius: 8px; padding: 7px 12px; cursor: pointer; font: inherit; }
+  nav button.actif { color: var(--texte); border-color: var(--visio); box-shadow: 0 0 0 1px var(--visio) inset; }
+  .intention { margin: 0 24px 14px; padding: 10px 14px; background: var(--carte); border: 1px solid var(--bord); border-radius: 10px; font-family: var(--mono); }
+  .intention b { color: var(--ambre); font-weight: 500; }
+  main { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, 1fr); gap: 14px; padding: 0 24px 24px; }
+  .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 12px 14px; }
+  .titre { font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--pale); margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; }
+  svg { width: 100%; height: auto; display: block; }
+  .lien { stroke: #26324d; stroke-width: 3; }
+  .noeud rect { fill: #111a2e; stroke: #33425f; stroke-width: 1.5; }
+  .noeud text, .hote text { fill: var(--texte); font: 600 13px var(--mono); text-anchor: middle; dominant-baseline: central; }
+  .hote circle { fill: #0b1220; stroke: #33425f; }
+  .hote text { font-size: 11px; font-weight: 400; fill: var(--pale); }
+  .couche { fill: var(--pale); font: 11px var(--mono); letter-spacing: 1.5px; text-anchor: middle; }
+  .flux { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 2 14; animation: couler .7s linear infinite; }
+  .trace { fill: none; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; opacity: .18; }
+  @keyframes couler { to { stroke-dashoffset: -16; } }
+  .geneur { fill: none; stroke: var(--ambre); stroke-width: 2.5; stroke-dasharray: 6 6; animation: couler 1.2s linear infinite; opacity: .9; }
+  .panne { stroke-width: 7; animation: clignote 1s ease-in-out infinite; }
+  @keyframes clignote { 50% { opacity: .35; } }
+  .etiquette { font: 11px var(--mono); }
+  .services { display: grid; gap: 10px; }
+  .service { border: 1px solid var(--bord); border-radius: 10px; padding: 10px 12px; }
+  .service h3 { margin: 0 0 6px; font: 600 15px "Bahnschrift", sans-serif; display: flex; justify-content: space-between; align-items: center; }
+  .badge { font: 600 11px var(--mono); padding: 2px 8px; border-radius: 99px; }
+  .badge.ok { background: rgba(52, 211, 153, .15); color: var(--ok); }
+  .badge.ko { background: rgba(248, 113, 113, .18); color: var(--ko); }
+  .mesures { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-family: var(--mono); }
+  .mesures div { background: #0a1120; border-radius: 6px; padding: 5px 6px; }
+  .mesures small { display: block; color: var(--pale); font-size: 10px; }
+  .mesures .depasse { color: var(--ko); }
+  .leviers { margin-top: 6px; font: 12px var(--mono); color: var(--pale); }
+  .leviers b { color: var(--texte); font-weight: 500; }
+  .tenu { font: 12px var(--mono); color: var(--pale); }
+  .panne-cours { font: 13px var(--mono); padding: 8px 10px; border-radius: 8px; background: #0a1120; }
+  .panne-cours.active { color: var(--orange); }
+  .controles { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .controles button { background: #13203a; color: var(--texte); border: 1px solid var(--bord); border-radius: 8px; padding: 6px 12px; cursor: pointer; font: inherit; }
+  .controles button.actif { border-color: var(--visio); }
+  input[type=range] { flex: 1; min-width: 160px; accent-color: var(--visio); }
+  .horloge { font: 600 15px var(--mono); min-width: 64px; text-align: right; }
+  canvas { width: 100%; height: 150px; display: block; }
+  .journal { font: 12px var(--mono); max-height: 230px; overflow-y: auto; display: flex; flex-direction: column-reverse; }
+  .journal div { padding: 2px 0; border-bottom: 1px solid #111a2c; color: var(--pale); }
+  .journal div.neuf { color: var(--texte); }
+  .journal .t { color: #4b5a7a; margin-right: 6px; }
+  .journal .ko { color: var(--ko); } .journal .ok { color: var(--ok); } .journal .alerte { color: var(--ambre); }
+  .bas { grid-column: 1 / -1; }
+  .legende { display: flex; gap: 14px; flex-wrap: wrap; font: 12px var(--mono); color: var(--pale); }
+  .legende i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+  footer { color: var(--pale); padding: 0 24px 24px; font-size: 12px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 0 16px 16px; } header, nav { padding-left: 16px; padding-right: 16px; } .intention { margin: 0 16px 12px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>IBN <span>·</span> réseau à 3 couches piloté par l'intention</h1>
+  <div class="sous">Rejeu de démos enregistrées sur le vrai réseau (Mininet), seconde par seconde</div>
+</header>
+<nav id="onglets"></nav>
+<div class="intention" id="intention"></div>
+
+<main>
+  <section class="carte">
+    <div class="titre"><span>Réseau</span><span id="panneTitre"></span></div>
+    <svg id="reseau" viewBox="0 0 760 430" role="img" aria-label="Topologie du réseau et chemin de chaque service"></svg>
+    <div class="legende">
+      <span><i style="background:var(--visio)"></i>visio h1 → h5</span>
+      <span><i style="background:var(--voix)"></i>voix h3 → h7</span>
+      <span><i style="background:var(--ambre)"></i>trafic gêneur</span>
+      <span><i style="background:var(--ko)"></i>lien dégradé</span>
+      <span><i style="background:var(--orange)"></i>lien instable</span>
+    </div>
+  </section>
+
+  <section class="services">
+    <div class="carte">
+      <div class="titre"><span>Panne en cours</span><span class="horloge" id="horloge">0 s</span></div>
+      <div class="panne-cours" id="panneCours">aucune panne</div>
+    </div>
+    <div class="service carte" id="carte-visio"></div>
+    <div class="service carte" id="carte-voix"></div>
+  </section>
+
+  <section class="carte bas">
+    <div class="controles">
+      <button id="lecture">▶ Lecture</button>
+      <button data-v="1">×1</button><button data-v="5" class="actif">×5</button><button data-v="20">×20</button>
+      <input type="range" id="curseur" min="1" max="420" value="1" aria-label="Instant">
+    </div>
+  </section>
+
+  <section class="carte">
+    <div class="titre"><span>Latence mesurée (échelle log) — trait pointillé : seuil du contrat ; rouge : contrat perdu</span></div>
+    <canvas id="graphe-visio"></canvas>
+    <canvas id="graphe-voix" style="margin-top:8px"></canvas>
+  </section>
+
+  <section class="carte">
+    <div class="titre"><span>Journal de la boucle IBN</span></div>
+    <div class="journal" id="journal"></div>
+  </section>
+</main>
+<footer>Données : ibn/valid_demo/phase4/ibn3_N.csv (vrai réseau émulé) · agent DQN à poids partagés entraîné dans le jumeau · détecteur MLP (phase 1, réentraîné jumeau + réel).</footer>
+
+<script src="donnees.js"></script>
+<script>
+const POS = { a1: [110, 120], a2: [110, 310], d1: [290, 120], d2: [290, 310], c1: [470, 120], c2: [470, 310], a3: [650, 120], a4: [650, 310] };
+const HOTES = { h1: ['a1', -1], h2: ['a1', 1], h3: ['a2', -1], h4: ['a2', 1], h5: ['a3', -1], h6: ['a3', 1], h7: ['a4', -1], h8: ['a4', 1] };
+const LIENS = [['a1','d1'],['a1','d2'],['a2','d1'],['a2','d2'],['d1','c1'],['d1','c2'],['d2','c1'],['d2','c2'],['c1','a3'],['c2','a3'],['c1','a4'],['c2','a4']];
+const NOM_CHEMIN = ['d1 → c1 (normal)', 'd1 → c2', 'd2 → c1', 'd2 → c2'];
+const SVGNS = 'http://www.w3.org/2000/svg';
+const COUL = { visio: getComputedStyle(document.documentElement).getPropertyValue('--visio').trim(),
+               voix: getComputedStyle(document.documentElement).getPropertyValue('--voix').trim() };
+
+let demo = DONNEES.demos[0], t = 1, vitesse = 5, enLecture = false, dernier = 0;
+
+function el(nom, attrs = {}, parent) {
+  const e = document.createElementNS(SVGNS, nom);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function posHote(h) {
+  const [sw, cote] = HOTES[h]; const [x, y] = POS[sw];
+  const gauche = ['a1', 'a2'].includes(sw);
+  return [x + (gauche ? -72 : 72), y + cote * 34];
+}
+
+// ---------- dessin fixe de la topologie
+const svg = document.getElementById('reseau');
+for (const [x, nom] of [[110, 'ACCÈS'], [290, 'DISTRIBUTION'], [470, 'CŒUR'], [650, 'ACCÈS']]) el('text', { x, y: 30, class: 'couche' }, svg).textContent = nom;
+const gLiens = el('g', {}, svg), gPannes = el('g', {}, svg), gGene = el('g', {}, svg), gFlux = el('g', {}, svg), gNoeuds = el('g', {}, svg);
+for (const [a, b] of LIENS) el('line', { x1: POS[a][0], y1: POS[a][1], x2: POS[b][0], y2: POS[b][1], class: 'lien' }, gLiens);
+for (const [h, [sw]] of Object.entries(HOTES)) {
+  const [x, y] = posHote(h);
+  el('line', { x1: x, y1: y, x2: POS[sw][0], y2: POS[sw][1], class: 'lien', 'stroke-width': 1.5 }, gLiens);
+  const g = el('g', { class: 'hote' }, gNoeuds);
+  el('circle', { cx: x, cy: y, r: 15 }, g);
+  el('text', { x, y }, g).textContent = h;
+}
+for (const [n, [x, y]] of Object.entries(POS)) {
+  const g = el('g', { class: 'noeud' }, gNoeuds);
+  el('rect', { x: x - 26, y: y - 17, width: 52, height: 34, rx: 8 }, g);
+  el('text', { x, y }, g).textContent = n;
+}
+
+function points(service, k, decal) {
+  const s = DONNEES.chemins[service][k];
+  const src = service === 'visio' ? 'h1' : 'h3', dst = service === 'visio' ? 'h5' : 'h7';
+  const pts = [posHote(src), ...[s[0][0], ...s.map(l => l[1])].map(n => POS[n]), posHote(dst)];
+  return pts.map(([x, y]) => `${x},${y + decal}`).join(' ');
+}
+
+// ---------- l'état d'une seconde
+function seconde(tt) { return demo.secondes[Math.min(demo.secondes.length, Math.max(1, tt)) - 1]; }
+
+function dessinerReseau(s) {
+  gPannes.innerHTML = ''; gGene.innerHTML = ''; gFlux.innerHTML = '';
+  for (const p of s.liens) {
+    const [a, b] = p.lien, coul = p.type === 'degrade' ? 'var(--ko)' : 'var(--orange)';
+    el('line', { x1: POS[a][0], y1: POS[a][1], x2: POS[b][0], y2: POS[b][1], class: 'panne', stroke: coul }, gPannes);
+    el('text', { x: (POS[a][0] + POS[b][0]) / 2, y: (POS[a][1] + POS[b][1]) / 2 - 10, class: 'etiquette', fill: coul, 'text-anchor': 'middle' }, gPannes)
+      .textContent = `${p.type === 'degrade' ? 'dégradé' : 'instable'} ${Math.round(p.x * 100)} %`;
+  }
+  for (const g of s.geneurs) {
+    const pts = [posHote(g.h), ...[g.liens[0][0], ...g.liens.map(l => l[1])].map(n => POS[n]), posHote(g.h === 'h2' ? 'h6' : 'h8')];
+    el('polyline', { points: pts.map(([x, y]) => `${x},${y - 7}`).join(' '), class: 'geneur' }, gGene);
+    const [x, y] = posHote(g.h);
+    el('text', { x: x + 2, y: y + (g.h === 'h2' ? 30 : -24), class: 'etiquette', fill: 'var(--ambre)', 'text-anchor': 'start' }, gGene)
+      .textContent = g.type === 'udp' ? `${g.debit} Mb/s` : 'TCP ×4';
+  }
+  for (const [service, decal] of [['visio', -3], ['voix', 3]]) {
+    const st = s[service], c = st.ok ? COUL[service] : 'var(--ko)';
+    el('polyline', { points: points(service, st.chemin, decal), class: 'trace', stroke: c }, gFlux);
+    el('polyline', { points: points(service, st.chemin, decal), class: 'flux', stroke: c }, gFlux);
+  }
+}
+
+function carteService(service, s) {
+  const st = s[service], c = demo.contrats[service];
+  const nominal = service === 'visio' ? 4 : 1;
+  const m = (val, seuil, plusGrandMauvais, txt) => `<div class="${(plusGrandMauvais ? val > seuil : val < seuil) ? 'depasse' : ''}">${txt}</div>`;
+  const lat = st.lat >= 1000 ? 'perdu' : `${st.lat.toFixed(st.lat < 100 ? 1 : 0)} ms`;
+  document.getElementById('carte-' + service).innerHTML = `
+    <h3><span style="color:${COUL[service]}">${service === 'visio' ? 'Visio' : 'Voix'}</span>
+        <span class="badge ${st.ok ? 'ok' : 'ko'}">${st.ok ? 'contrat tenu' : 'contrat perdu'}</span></h3>
+    <div class="mesures">
+      ${m(st.lat, c.lat, true, `<small>latence ≤ ${c.lat}</small>${lat}`)}
+      ${m(st.pertes, c.pertes, true, `<small>pertes ≤ ${c.pertes} %</small>${st.pertes.toFixed(1)} %`)}
+      ${m(st.gigue, c.gigue, true, `<small>gigue ≤ ${c.gigue}</small>${st.gigue.toFixed(1)} ms`)}
+      ${m(st.debit / nominal * 100, c.debit, false, `<small>débit ≥ ${c.debit} %</small>${(st.debit / nominal * 100).toFixed(0)} %`)}
+    </div>
+    <div class="leviers">chemin <b>${NOM_CHEMIN[st.chemin]}</b> · priorité <b>${st.prio ? 'oui' : 'non'}</b> · gêneur bridé <b>${st.bride ? 'oui' : 'non'}</b></div>
+    <div class="tenu">sur toute la démo : contrat tenu ${c.tenu} % du temps</div>`;
+}
+
+// ---------- graphes de latence
+function graphe(service) {
+  const cv = document.getElementById('graphe-' + service), r = devicePixelRatio || 1;
+  const L = cv.clientWidth, H = cv.clientHeight;
+  cv.width = L * r; cv.height = H * r;
+  const g = cv.getContext('2d'); g.scale(r, r);
+  const n = demo.secondes.length, X = i => 34 + (L - 44) * i / (n - 1);
+  const Y = v => { const lv = Math.log10(Math.min(Math.max(v, 5), 1500)); return 8 + (H - 22) * (1 - (lv - Math.log10(5)) / (Math.log10(1500) - Math.log10(5))); };
+  g.fillStyle = 'rgba(248,113,113,.16)';
+  demo.secondes.forEach((s, i) => { if (!s[service].ok) g.fillRect(X(i) - 1, 8, Math.max(2, (L - 44) / n + 1), H - 22); });
+  g.strokeStyle = '#1c2740'; g.fillStyle = '#7d8bab'; g.font = '10px Consolas, monospace'; g.lineWidth = 1;
+  for (const v of [10, 100, 1000]) { g.beginPath(); g.moveTo(34, Y(v)); g.lineTo(L - 10, Y(v)); g.stroke(); g.fillText(v, 4, Y(v) + 3); }
+  g.setLineDash([4, 4]); g.strokeStyle = '#fbbf24'; g.beginPath(); g.moveTo(34, Y(demo.contrats[service].lat)); g.lineTo(L - 10, Y(demo.contrats[service].lat)); g.stroke(); g.setLineDash([]);
+  g.strokeStyle = COUL[service]; g.lineWidth = 1.6; g.beginPath();
+  demo.secondes.forEach((s, i) => { const y = Y(s[service].lat); i ? g.lineTo(X(i), y) : g.moveTo(X(i), y); }); g.stroke();
+  g.fillStyle = COUL[service]; g.fillText(service, L - 40, 18);
+  const x = X(t - 1); g.strokeStyle = '#d7e1f5'; g.lineWidth = 1; g.beginPath(); g.moveTo(x, 6); g.lineTo(x, H - 12); g.stroke();
+  g.fillStyle = '#7d8bab'; g.fillText(`${n} s`, L - 34, H - 2); g.fillText('0', 34, H - 2);
+}
+
+function journal() {
+  const lignes = demo.journal.filter(([tt]) => tt <= t);
+  document.getElementById('journal').innerHTML = lignes.slice().reverse().map(([tt, txt], i) => {
+    const cl = txt.includes('✗') ? 'ko' : txt.includes('✓') ? 'ok' : txt.includes('⚠') ? 'alerte' : '';
+    return `<div class="${i < 3 && t - tt < 6 ? 'neuf' : ''}"><span class="t">${String(tt).padStart(3)} s</span><span class="${cl}">${txt}</span></div>`;
+  }).join('') || '<div>(rien encore)</div>';
+}
+
+function afficher() {
+  const s = seconde(t);
+  document.getElementById('curseur').value = t;
+  document.getElementById('horloge').textContent = `${t} s`;
+  const pc = document.getElementById('panneCours');
+  pc.textContent = s.panne === 'aucune panne' ? 'aucune panne' : `${s.panne}${s.progressive ? ' — elle monte progressivement' : ''}`;
+  pc.className = 'panne-cours' + (s.panne === 'aucune panne' ? '' : ' active');
+  document.getElementById('panneTitre').textContent = `seconde ${t} / ${demo.secondes.length}`;
+  dessinerReseau(s); carteService('visio', s); carteService('voix', s);
+  graphe('visio'); graphe('voix'); journal();
+}
+
+function choisir(d) {
+  demo = d; t = 1;
+  document.getElementById('curseur').max = d.secondes.length;
+  document.getElementById('intention').innerHTML = `Intention donnée en français : <b>« ${d.intention} »</b>`;
+  document.querySelectorAll('#onglets button').forEach(b => b.classList.toggle('actif', +b.dataset.id === d.id));
+  afficher();
+}
+
+DONNEES.demos.forEach(d => {
+  const b = document.createElement('button'); b.textContent = d.titre; b.dataset.id = d.id;
+  b.onclick = () => choisir(d); document.getElementById('onglets').appendChild(b);
+});
+document.getElementById('curseur').oninput = e => { t = +e.target.value; afficher(); };
+document.getElementById('lecture').onclick = e => { enLecture = !enLecture; e.target.textContent = enLecture ? '❚❚ Pause' : '▶ Lecture'; };
+document.querySelectorAll('.controles [data-v]').forEach(b => b.onclick = () => {
+  vitesse = +b.dataset.v; document.querySelectorAll('.controles [data-v]').forEach(x => x.classList.toggle('actif', x === b));
+});
+function boucle(ms) {
+  if (enLecture && ms - dernier > 1000 / vitesse) {
+    dernier = ms;
+    if (t < demo.secondes.length) { t++; afficher(); } else { enLecture = false; document.getElementById('lecture').textContent = '▶ Lecture'; }
+  }
+  requestAnimationFrame(boucle);
+}
+addEventListener('resize', () => { graphe('visio'); graphe('voix'); });
+choisir(DONNEES.demos[0]);
+requestAnimationFrame(boucle);
+</script>
+</body>
+</html>

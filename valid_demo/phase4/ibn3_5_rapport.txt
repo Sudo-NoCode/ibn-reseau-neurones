@@ -1,0 +1,68 @@
+================================================================================================
+RAPPORT IBN — réseau à 3 couches
+================================================================================================
+Intentions : « visio correcte, jamais de priorité ; voix excellente, ne pas brider les autres »
+Durée      : 420 s
+
+VISIO — contrat : latence ≤ 60 ms, pertes ≤ 2 %, gigue ≤ 15 ms, débit ≥ 90 %
+  Contrat tenu : 98.6 % du temps   (prévu par le jumeau : 97.7 %)
+  Leviers : hors du chemin normal 66 % du temps, priorité 0 %, h2 bridé 0 %, 7 changements ; secondes sur un levier interdit : 0
+  Incidents : 4, dont 0 annoncés par le détecteur ; alertes du détecteur : 0
+    #1    31–  31 s   1 s hors contrat   (vraie cause, connue du labo seulement : congestion (UDP))
+        détecteur : non annoncé ; diagnostic : congestion
+        actions : visio passe par d2-c2 (à 31 s); voix passe par d2-c2 (à 31 s)
+    #2   131– 132 s   2 s hors contrat   (vraie cause, connue du labo seulement : lien dégradé)
+        détecteur : non annoncé ; diagnostic : lien
+        actions : visio passe par d2-c2 (à 132 s); voix passe par d2-c2 (à 132 s)
+    #3   231– 231 s   1 s hors contrat   (vraie cause, connue du labo seulement : congestion (TCP))
+        détecteur : non annoncé ; diagnostic : congestion
+        actions : visio passe par d2-c2 (à 231 s); voix passe par d2-c2 (à 231 s)
+    #4   331– 332 s   2 s hors contrat   (vraie cause, connue du labo seulement : deux liens en panne)
+        détecteur : non annoncé ; diagnostic : instable
+        actions : voix passe par d2-c2 (à 331 s); visio passe par d2-c2 (à 332 s)
+
+VOIX — contrat : latence ≤ 40 ms, pertes ≤ 0.5 %, gigue ≤ 8 ms, débit ≥ 97.5 %
+  Contrat tenu : 98.3 % du temps   (prévu par le jumeau : 99.7 %)
+  Leviers : hors du chemin normal 66 % du temps, priorité 0 %, h4 bridé 0 %, 7 changements ; secondes sur un levier interdit : 0
+  Incidents : 3, dont 0 annoncés par le détecteur ; alertes du détecteur : 0
+    #1   130– 132 s   3 s hors contrat   (vraie cause, connue du labo seulement : lien dégradé)
+        détecteur : non annoncé ; diagnostic : lien
+        actions : visio passe par d2-c2 (à 132 s); voix passe par d2-c2 (à 132 s)
+    #2   230– 231 s   2 s hors contrat   (vraie cause, connue du labo seulement : congestion (TCP))
+        détecteur : non annoncé ; diagnostic : instable
+        actions : visio passe par d2-c2 (à 231 s); voix passe par d2-c2 (à 231 s)
+    #3   330– 331 s   2 s hors contrat   (vraie cause, connue du labo seulement : deux liens en panne)
+        détecteur : non annoncé ; diagnostic : lien
+        actions : voix passe par d2-c2 (à 331 s); visio passe par d2-c2 (à 332 s)
+
+Qualité de mesure : 0.0 % de secondes perturbées par un gel de la VM
+
+JOURNAL
+[  31 s] VISIO ✗ contrat perdu : latence 127 ms, débit 3.02 Mb/s
+[  31 s] VISIO → passe par d2-c2
+[  31 s] VOIX  → passe par d2-c2
+[  32 s] VISIO ✓ contrat rétabli, 1 s après la perte
+[  93 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[  94 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 130 s] VOIX  ✗ contrat perdu : débit 0.90 Mb/s
+[ 131 s] VISIO ✗ contrat perdu : latence 110 ms, pertes 5.0 %, débit 3.46 Mb/s
+[ 132 s] VISIO → passe par d2-c2
+[ 132 s] VOIX  → passe par d2-c2
+[ 133 s] VISIO ✓ contrat rétabli, 2 s après la perte
+[ 133 s] VOIX  ✓ contrat rétabli, 3 s après la perte
+[ 193 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 194 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 230 s] VOIX  ✗ contrat perdu : débit 0.96 Mb/s
+[ 231 s] VISIO ✗ contrat perdu : débit 3.59 Mb/s
+[ 231 s] VISIO → passe par d2-c2
+[ 231 s] VOIX  → passe par d2-c2
+[ 232 s] VISIO ✓ contrat rétabli, 1 s après la perte
+[ 232 s] VOIX  ✓ contrat rétabli, 2 s après la perte
+[ 293 s] VOIX  → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 295 s] VISIO → passe par d1-c1 (chemin normal)  (aucun incident en cours)
+[ 330 s] VOIX  ✗ contrat perdu : pertes 2.1 %, débit 0.89 Mb/s
+[ 331 s] VISIO ✗ contrat perdu : gigue 18 ms
+[ 331 s] VOIX  → passe par d2-c2
+[ 332 s] VISIO → passe par d2-c2
+[ 332 s] VOIX  ✓ contrat rétabli, 2 s après la perte
+[ 333 s] VISIO ✓ contrat rétabli, 2 s après la perte

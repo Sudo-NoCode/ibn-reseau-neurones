@@ -1,0 +1,39 @@
+enable
+configure terminal
+hostname EDGE
+no ip domain-lookup
+enable secret Lab-e28a816f
+service password-encryption
+banner motd #Configure automatiquement par la boucle IBN - acces reserve#
+line console 0
+ logging synchronous
+ exit
+interface GigabitEthernet0/0
+ description vers CORE1
+ ip address 10.255.0.2 255.255.255.252
+ no shutdown
+ exit
+interface GigabitEthernet0/1
+ description vers CORE2
+ ip address 10.255.0.6 255.255.255.252
+ no shutdown
+ exit
+interface Loopback0
+ description joue le role d Internet
+ ip address 203.0.113.1 255.255.255.0
+ exit
+router ospf 1
+ router-id 9.9.9.9
+ network 10.255.0.0 0.0.0.255 area 0
+ network 203.0.113.0 0.0.0.255 area 0
+ exit
+ip domain-name ibn.lab
+username admin privilege 15 secret Lab-e28a816f
+crypto key generate rsa general-keys modulus 1024
+ip ssh version 2
+line vty 0 15
+ login local
+ transport input ssh
+ exit
+end
+write memory

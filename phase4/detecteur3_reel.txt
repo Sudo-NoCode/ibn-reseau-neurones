@@ -1,0 +1,14 @@
+
+================ VRAI RÉSEAU (det3_reel.csv) : 6 sessions, 7200 lignes ================
+1b — « le contrat sera-t-il perdu dans 10 s ? »
+                         précision  fausses alertes  secondes d'avant-panne vues  pannes vues venir   avance
+MLP 10 s + 3 oui             90.3%             0.5%                        37.7%              17/36    6.1 s
+règle « déjà violé »         93.5%             0.8%                         0.0%               0/36    0.0 s
+   pannes vues venir par type : congestion_tcp brusque 0/10 ; congestion_udp progressive 10/10 ; double_congestion progressive 0/8 ; double_panne brusque 0/1 ; double_panne progressive 4/4 ; instable progressive 3/3
+1a — « quel problème ? » : précision 94.4%
+  prédite     congestion  instable  lien  normal
+  vraie                                         
+  congestion        1740         2   104     220
+  instable             0       288     7       8
+  lien                 0         0   213       4
+  normal              10        15    26    4455

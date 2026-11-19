@@ -1,0 +1,46 @@
+entraînement sur : ['p01', 'p02', 'p03', 'p04', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10', 'p11', 'p12', 'p13', 'p14', 'p15', 'p16', 'p17', 'p18', 'p19', 'p20', 's01', 's02', 's03', 's04', 's05', 's06', 's07', 's08', 's09', 's10', 's11', 's12', 's13', 's14']
+
+================ PHASE 1b : « une violation arrive dans 10 s ? » ================
+jeu                         modèle                   précision  fausses alertes  pannes vues venir   avance
+test brusque (s17-20)       MLP 10 s + 3 oui             92.4%             2.9%               7/16    4.9 s
+test brusque (s17-20)       règle persistance            90.2%             1.1%               0/16    0.0 s
+test progressif (p24-28)    MLP 10 s + 3 oui             93.4%             1.8%              12/18    3.2 s
+test progressif (p24-28)    règle persistance            91.6%             0.9%               0/18    0.0 s
+généralisation 10 Mbps      MLP 10 s + 3 oui             90.0%             1.1%               4/10    6.5 s
+généralisation 10 Mbps      règle persistance            86.5%             1.7%               0/10    0.0 s
+généralisation 50 Mbps      MLP 10 s + 3 oui             86.9%             0.8%                4/9    4.2 s
+généralisation 50 Mbps      règle persistance            89.6%             1.3%                0/9    0.0 s
+
+================ PHASE 1a : « quel problème ? » (4 classes) ================
+
+test brusque (s17-20) : précision 89.6%   F1 macro 0.83   congestion 0.59   instable 0.97   lien 0.80   normal 0.98
+  prédite     congestion  instable  lien  normal
+  vraie                                         
+  congestion         133         0   167       3
+  instable             0       218     0       9
+  lien                15         4   463      41
+  normal               2         2     2    1305
+
+test progressif (p24-28) : précision 94.8%   F1 macro 0.93   congestion 0.86   instable 0.93   lien 0.94   normal 0.97
+  prédite     congestion  instable  lien  normal
+  vraie                                         
+  congestion         243         0    22      30
+  instable            15       289     0      24
+  lien                 2         0   621      50
+  normal               7         2     2    1648
+
+généralisation 10 Mbps : précision 88.8%   F1 macro 0.79   congestion 0.61   instable 0.64   lien 0.95   normal 0.96
+  prédite     congestion  instable  lien  normal
+  vraie                                         
+  congestion          78        76     8       0
+  instable             0        80     0       7
+  lien                 2         0   302      18
+  normal              13         7     1     590
+
+généralisation 50 Mbps : précision 97.4%   F1 macro 0.97   congestion 0.97   instable 0.99   lien 0.95   normal 0.98
+  prédite     congestion  instable  lien  normal
+  vraie                                         
+  congestion         107         1     2       3
+  instable             0       211     0       4
+  lien                 0         0   199      19
+  normal               1         0     1     634
