@@ -13,6 +13,8 @@ On dit au réseau **ce qu'on veut**, en français, et il se débrouille pour le 
 
 Tout est validé sur un **vrai réseau émulé** (Mininet, Open vSwitch, trafic iperf3), pas seulement en simulation.
 
+**▶ Démo en ligne : [sudo-nocode.github.io/ibn-reseau-neurones/demo](https://sudo-nocode.github.io/ibn-reseau-neurones/demo/)** — rejoue seconde par seconde quatre démos enregistrées sur le réseau émulé (pannes brusques, pannes progressives, visio exigeante, leviers interdits).
+
 *English summary: an Intent-Based Networking prototype. A French sentence becomes a per-service contract; neural
 detectors forecast and diagnose faults; a shared-weights DQN agent trained in a calibrated digital twin repairs the
 network (path, priority, rate limiting). Everything is validated on an emulated network (Mininet). A separate generator
@@ -78,7 +80,7 @@ cd ../conf
 python cisco.py "réseau d'entreprise avec visio, voix, données, invités et serveurs ; 2 commutateurs d'accès ; cœur redondant ; les invités ne doivent pas accéder aux serveurs" mon-reseau
 ```
 
-La page de démo s'ouvre directement : `demo/index.html`.
+La page de démo s'ouvre directement (`demo/index.html`) ou en ligne : https://sudo-nocode.github.io/ibn-reseau-neurones/demo/
 
 **Sur le réseau émulé** (Ubuntu avec Mininet, Open vSwitch et iperf3) : copier dans un même dossier les fichiers de
 `lab/`, `phase2/`, `phase3/`, `phase4/` et les poids (`*.npz`, `phase4/v1/*`), puis par exemple :
